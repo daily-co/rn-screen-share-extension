@@ -8,7 +8,7 @@ import Dispatch
 // Copyright © 2021 8x8, Inc. All rights reserved.
 // Modifications copyright © 2023 Daily, Co.
 // Changes that have been made:
-// - Refactored the name of the class and to don't use extensions;
+// - Refactored the name of the class and to not use extensions;
 // - Not relying on Atomic to handle concurrency;
 // - Using NSLog
 //
