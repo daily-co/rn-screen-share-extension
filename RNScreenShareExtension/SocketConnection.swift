@@ -6,7 +6,7 @@ import Foundation
 // Copyright © 2021 Atlassian Inc. All rights reserved.
 // Modifications copyright © 2023 Daily, Co.
 // Changes that have been made:
-// - Refactored to don't use extensions;
+// - Refactored to not use extensions;
 // - Refactored the way that we are addressing the mutable pointers
 // - Refactored to validate the file descriptor path length using strlen
 // - Created a method to check if the connection is ready
