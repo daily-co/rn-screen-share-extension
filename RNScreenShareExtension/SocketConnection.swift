@@ -36,6 +36,7 @@ final class SocketConnection: NSObject, StreamDelegate {
     private var outputStream: OutputStream?
 
     private let networkQueue: DispatchQueue = .global(qos: .userInitiated)
+    private let shouldKeepRunningLock = NSLock()
     private var shouldKeepRunning: Bool = false
     let addressPointer: UnsafeMutablePointer<sockaddr_un> = .allocate(capacity: MemoryLayout<sockaddr_un>.size)
 
@@ -136,39 +137,39 @@ final class SocketConnection: NSObject, StreamDelegate {
     }
 
     private func scheduleStreams() {
-        shouldKeepRunning = true
+        shouldKeepRunningLock.withLock {
+            shouldKeepRunning = true
+        }
         networkQueue.async { [weak self] in
             guard let self else { return }
             self.inputStream?.schedule(in: .current, forMode: .common)
             self.outputStream?.schedule(in: .current, forMode: .common)
-            RunLoop.current.run()
-
             var isRunning = false
             repeat {
-                guard self.shouldKeepRunning else { break }
+                let keepRunning: Bool = shouldKeepRunningLock.withLock {
+                    return self.shouldKeepRunning
+                }
+                guard keepRunning else { break }
                 isRunning = RunLoop.current.run(mode: .default, before: .distantFuture)
             } while (isRunning)
         }
     }
 
     private func unscheduleStreams() {
+        shouldKeepRunningLock.withLock {
+            shouldKeepRunning = false
+        }
         networkQueue.sync { [weak self] in
             guard let self else { return }
             self.inputStream?.remove(from: .current, forMode: .common)
             self.outputStream?.remove(from: .current, forMode: .common)
         }
-
-        shouldKeepRunning = false
     }
 
     private func notifyDidClose(error: Error?) {
         if let didClose {
             didClose(error)
         }
-    }
-
-    func isConnectionReady() -> Bool {
-        return self.shouldKeepRunning
     }
 
     // Method from the Protocol StreamDelegate
