@@ -28,6 +28,7 @@ final class JpegUploader {
     static let bufferSize = 10 * 1024 // Matching what is configure inside react-native-webrtc
     private let imageContext = CIContext(options: nil)
 
+    private var isReady: Bool = false
     private var connection: SocketConnection
 
     private var dataToSend: Data?
@@ -40,28 +41,35 @@ final class JpegUploader {
         setupConnection()
     }
 
-    @discardableResult func send(sample buffer: CMSampleBuffer) -> Bool {
-        let isSendingLastFrame = dataToSend != nil
-        let isReady = self.connection.isConnectionReady()
-        if (!isReady || isSendingLastFrame) {
-            return false
-        }
-
-        dataToSend = prepare(sample: buffer)
-        byteIndex = 0
-
+    func send(sample buffer: CMSampleBuffer) {
         serialQueue.async { [weak self] in
-            self?.sendDataChunk()
-        }
+            guard let self, isReady else { return }
 
-        return true
+            isReady = false
+
+            dataToSend = prepare(sample: buffer)
+            byteIndex = 0
+
+            sendDataChunk()
+        }
     }
 
     private func setupConnection() {
+        connection.didOpen = { [weak self] in
+            guard let self else { return }
+
+            self.serialQueue.async {
+                self.isReady = true
+            }
+        }
+
         connection.streamHasSpaceAvailable = { [weak self] in
             guard let self else { return }
+
             self.serialQueue.async {
-                self.sendDataChunk()
+                let success = self.sendDataChunk()
+
+                self.isReady = !success
             }
         }
     }
