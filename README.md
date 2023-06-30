@@ -19,18 +19,18 @@ It is available for applications running on iOS 14 or newer.
 - Do not select "include UI extension".
 - Recommended naming: ScreenCaptureExtension, since it’s an independent process responsible for ingesting and processing the captured video & audio frames that the OS captures and passing it to your app, which then actually sends the media via WebRTC.
 
-### 2 - Add the Daily RNScreenShareExtension as dependency
+### 2 - Add the ReactNativeDailyJSScreenShareExtension as dependency
 
 ![framework_dependency.png](doc-images%2Fframework_dependency.png)
 
-- Add the Framework RNScreenShareExtension as a dependency for your extension.
+- You can add this package via Xcode's package manager using the URL of this git repository directly
 
 ### 3 - Replace your SampleHandler.swift
 
 Replace the default code that has been created by this code below:
 
 ```Swift
-import RNScreenShareExtension
+import ReactNativeDailyJSScreenShareExtension
 
 public class SampleHandler: DailyRPHandler {
 
