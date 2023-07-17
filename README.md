@@ -10,6 +10,8 @@ This framework provides all the files needed for capturing the contents of the u
 
 It is available for applications running on iOS 14 or newer.
 
+> The feature to send screen sharing is only supported when using react-native-daily-js 0.46.0 or above.
+
 ## Using the Framework
 
 ### 1 - Create a new Broadcast Upload Extension target in Xcode.
@@ -21,9 +23,16 @@ It is available for applications running on iOS 14 or newer.
 
 ### 2 - Add the ReactNativeDailyJSScreenShareExtension as dependency
 
-![framework_dependency.png](doc-images%2Fframework_dependency.png)
+If you are using `react-native-daily-js` `0.46.0` or later, there is a version that is already included in the pod.
 
-- You can add this package via Xcode's package manager using the URL of this git repository directly
+Inside the target that you have created, for instance `ScreenCaptureExtension`:
+- Click to add a new item inside **_Frameworks and Libraries_**/
+- Search for Daily to filter the options.
+- Add the `ReactNativeDailyJSScreenShareExtension`.
+
+![search_pod_dependency.png](doc-images%2Fsearch_pod_dependency.png)
+
+![pod_dependency.png](doc-images%2Fpod_dependency.png)
 
 ### 3 - Replace your SampleHandler.swift
 
@@ -50,7 +59,7 @@ public class SampleHandler: DailyRPHandler {
 - Add RTCAppGroupIdentifier key with your app group identifier (e.g. co.daily.DailyPlayground.group)
 - Add DailyScreenCaptureExtensionBundleIdentifier key with your screen share extension’s bundle identifier (e.g. co.daily.DailyPlayground.ScreenCaptureExtension)
 
-If you view the raw file contents of Info.plist, it should look like this:
+If you view the raw file contents of `Info.plist`, it should look like this:
 
 ```
 <dict>
